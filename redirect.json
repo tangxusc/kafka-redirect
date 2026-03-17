@@ -1,0 +1,66 @@
+{
+  "jobs": [
+    {
+      "name": "机坪融合信息",
+      "source": {
+        "bootstrap_servers": "192.168.200.170:30901",
+        "topic": "csb_apron_radar_out",
+        "group_id": "csb_apron_radar_out_redirect",
+        "initial_offset": "earliest",
+        "save": {
+          "enabled": true,
+          "path": "./csb_apron_radar_out",
+          "max_size": "1GB"
+        }
+      },
+      "target": {
+        "bootstrap_servers": "192.168.102.49:9092",
+        "topic": "csb_apron_radar_out"
+      },
+      "transform": {
+        "steps": [
+          {
+            "name": "set-acid-fixed",
+            "plugin": "rewrite_value",
+            "expr": "{\"acid\":\"ABCD\"}"
+          }
+        ]
+      },
+      "retry": {
+        "max_attempts": 3,
+        "backoff_ms": 500
+      }
+    },
+    {
+      "name": "飞管位置信息",
+      "source": {
+        "bootstrap_servers": "192.168.200.170:30901",
+        "topic": "csb_fz_location_data_out",
+        "group_id": "csb_fz_location_data_out_redirect",
+        "initial_offset": "earliest",
+        "save": {
+          "enabled": true,
+          "path": "./csb_fz_location_data_out",
+          "max_size": "1GB"
+        }
+      },
+      "target": {
+        "bootstrap_servers": "192.168.102.49:9092",
+        "topic": "csb_fz_location_data_out"
+      },
+      "transform": {
+        "steps": [
+          {
+            "name": "set-vehicle-plate-fixed",
+            "plugin": "rewrite_value",
+            "expr": "{\"vehicle_plate\":\"ABCD\"}"
+          }
+        ]
+      },
+      "retry": {
+        "max_attempts": 3,
+        "backoff_ms": 500
+      }
+    }
+  ]
+}
